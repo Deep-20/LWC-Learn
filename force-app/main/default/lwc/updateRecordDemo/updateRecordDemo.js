@@ -1,7 +1,7 @@
 import { LightningElement, wire } from 'lwc';
 import {getListUi} from 'lightning/uiListApi';
 import {updateRecord} from 'lightning/uiRecordApi'
-
+import {refreshApex} from '@salesforce/apex';
 import CONTACT_OBJECT from '@salesforce/schema/Contact'
 
 const COLS = [
@@ -63,6 +63,7 @@ export default class UpdateRecordDemo extends LightningElement {
         Promise.all(promises).then(() => {
             console.log('Contacts Updated Successfully!!');
             this.draftValues = []
+            return refreshApex(this.contacts);
             
         }).catch(error =>{
             console.log("Error Updating the record, "+error);
