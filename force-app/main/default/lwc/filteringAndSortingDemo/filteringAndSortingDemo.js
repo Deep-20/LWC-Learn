@@ -7,13 +7,15 @@ export default class FilteringAndSortingDemo extends LightningElement {
     filteredData = []
     timer
     filterBy = 'Name'
+    sortedBy = 'Name'
+    sortDirection = 'asc'
 
     @wire(getContactList)
     contactHandler({data, error}){
         if(data){
             console.log(data);
             this.fullTableData = data;
-            this.filteredData = data;
+            this.filteredData = [...this.sortBy(data)];
         }
         if(error){
             console.error(error);
@@ -23,6 +25,15 @@ export default class FilteringAndSortingDemo extends LightningElement {
     get FilterByOptions(){
         return [
             {label:"All", value:"All"},
+            {label:"Id", value:"Id"},
+            {label:"Name", value:"Name"},
+            {label:"Title", value:"Title"},
+            {label:"Email", value:"Email"}
+        ]
+    }
+
+    get SortByOptions(){
+        return [
             {label:"Id", value:"Id"},
             {label:"Name", value:"Name"},
             {label:"Title", value:"Title"},
@@ -56,5 +67,25 @@ export default class FilteringAndSortingDemo extends LightningElement {
         }else{
             this.filteredData = [...this.fullTableData]
         }
+    }
+
+    /******** Sorting Logic below */
+    sortHandler(event){
+        this.sortedBy = event.target.value;
+        this.filteredData = [...this.sortBy(this.filteredData)]
+    }
+
+    sortBy(data){
+        const cloneData = [...data]
+        cloneData.sort((a,b)=> {
+            if(a[this.sortedBy] === b[this.sortedBy]){
+                return 0
+            }
+            return this.sortDirection === 'desc' ? 
+                    a[this.sortedBy] > b[this.sortedBy] ? -1:1 :
+                    a[this.sortedBy] < b[this.sortedBy] ? -1:1
+        })
+
+        return cloneData
     }
 }
